@@ -17,6 +17,7 @@ export const SKILL_CATEGORIES = [
 ] as const;
 
 export const createSkillSchema = z.object({
+  userId: z.number().int().positive("El ID de usuario debe ser un numero positivo"),
   name: z.string().min(1, "El nombre es obligatorio").max(255, "El nombre no puede exceder 255 caracteres"),
   category: z.string().min(1, "La categoria es obligatoria").max(100, "La categoria no puede exceder 100 caracteres"),
   proficiency: z

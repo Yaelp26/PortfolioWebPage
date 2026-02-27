@@ -13,6 +13,7 @@ import type { Project, CreateProjectDTO, UpdateProjectDTO } from "../entities/pr
 export interface ProjectRepository {
   findAll(): Promise<Project[]>;
   findById(id: number): Promise<Project | null>;
+  findByUserId(userId: number): Promise<Project[]>;
   create(data: CreateProjectDTO): Promise<Project>;
   update(id: number, data: UpdateProjectDTO): Promise<Project | null>;
   delete(id: number): Promise<boolean>;

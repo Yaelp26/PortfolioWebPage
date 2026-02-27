@@ -5,6 +5,7 @@
  */
 export interface Project {
   id: number;
+  userId: number;
   title: string;
   description: string;
   imageUrl: string | null;
@@ -22,6 +23,7 @@ export interface Project {
  * Excludes auto-generated fields (id, createdAt, updatedAt).
  */
 export interface CreateProjectDTO {
+  userId: number;
   title: string;
   description: string;
   imageUrl?: string | null;

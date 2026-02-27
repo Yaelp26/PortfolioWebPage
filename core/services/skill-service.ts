@@ -18,6 +18,10 @@ export class SkillService {
     return this.repository.findById(id);
   }
 
+  async getSkillsByUserId(userId: number): Promise<Skill[]> {
+    return this.repository.findByUserId(userId);
+  }
+
   async createSkill(data: CreateSkillDTO): Promise<Skill> {
     const validated = createSkillSchema.parse(data);
     return this.repository.create(validated);

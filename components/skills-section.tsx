@@ -2,6 +2,7 @@
 
 import useSWR from "swr";
 import { useState } from "react";
+import { useSession } from "next-auth/react";
 import type { Skill } from "@/core/entities/skill";
 import { SKILL_CATEGORIES } from "@/core/validators/skill-validator";
 import { Button } from "@/components/ui/button";
@@ -24,7 +25,11 @@ const emptyForm = {
 };
 
 export function SkillsSection() {
-  const { data: skills, mutate, isLoading } = useSWR<Skill[]>("/api/skills");
+  const { data: session } = useSession();
+  const userId = session?.user?.id;
+  const { data: skills, mutate, isLoading } = useSWR<Skill[]>(
+    userId ? `/api/skills?userId=${userId}` : null
+  );
   const [open, setOpen] = useState(false);
   const [editingId, setEditingId] = useState<number | null>(null);
   const [form, setForm] = useState(emptyForm);
@@ -48,7 +53,14 @@ export function SkillsSection() {
 
   async function handleSubmit(e: React.FormEvent) {
     e.preventDefault();
+    
+    if (!userId) {
+      toast.error("Debes iniciar sesión para crear habilidades");
+      return;
+    }
+
     const payload = {
+      userId: parseInt(userId),
       name: form.name,
       category: form.category,
       proficiency: Number(form.proficiency),
@@ -98,7 +110,7 @@ export function SkillsSection() {
   }
 
   // Group skills by category
-  const grouped = (skills ?? []).reduce<Record<string, Skill[]>>((acc, skill) => {
+  const grouped = (Array.isArray(skills) ? skills : []).reduce<Record<string, Skill[]>>((acc, skill) => {
     if (!acc[skill.category]) acc[skill.category] = [];
     acc[skill.category].push(skill);
     return acc;

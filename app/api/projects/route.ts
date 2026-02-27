@@ -9,10 +9,20 @@ import { projectService } from "@/web/container";
 import { ZodError } from "zod";
 
 /**
- * GET /api/projects - Retrieve all projects.
+ * GET /api/projects - Retrieve all projects or projects by user.
+ * Query params:
+ *   - userId (optional): Filter projects by user ID
  */
-export async function GET() {
+export async function GET(request: Request) {
   try {
+    const { searchParams } = new URL(request.url);
+    const userId = searchParams.get("userId");
+
+    if (userId) {
+      const projects = await projectService.getProjectsByUserId(parseInt(userId));
+      return NextResponse.json(projects);
+    }
+
     const projects = await projectService.getAllProjects();
     return NextResponse.json(projects);
   } catch (error) {

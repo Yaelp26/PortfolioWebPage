@@ -27,6 +27,10 @@ export class ProjectService {
     return this.repository.findById(id);
   }
 
+  async getProjectsByUserId(userId: number): Promise<Project[]> {
+    return this.repository.findByUserId(userId);
+  }
+
   async createProject(data: CreateProjectDTO): Promise<Project> {
     // Validate business rules before persisting
     const validated = createProjectSchema.parse(data);

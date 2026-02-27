@@ -6,8 +6,21 @@ import { NextResponse } from "next/server";
 import { experienceService } from "@/web/container";
 import { ZodError } from "zod";
 
-export async function GET() {
+/**
+ * GET /api/experiences - Retrieve all experiences or experiences by user.
+ * Query params:
+ *   - userId (optional): Filter experiences by user ID
+ */
+export async function GET(request: Request) {
   try {
+    const { searchParams } = new URL(request.url);
+    const userId = searchParams.get("userId");
+
+    if (userId) {
+      const experiences = await experienceService.getExperiencesByUserId(parseInt(userId));
+      return NextResponse.json(experiences);
+    }
+
     const experiences = await experienceService.getAllExperiences();
     return NextResponse.json(experiences);
   } catch (error) {

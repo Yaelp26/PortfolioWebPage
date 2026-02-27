@@ -6,6 +6,7 @@ import { z } from "zod";
 
 export const createExperienceSchema = z
   .object({
+    userId: z.number().int().positive("El ID de usuario debe ser un numero positivo"),
     company: z.string().min(1, "La empresa es obligatoria").max(255, "La empresa no puede exceder 255 caracteres"),
     position: z.string().min(1, "El puesto es obligatorio").max(255, "El puesto no puede exceder 255 caracteres"),
     description: z.string().min(1, "La descripcion es obligatoria"),

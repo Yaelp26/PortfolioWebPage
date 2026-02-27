@@ -7,6 +7,7 @@ import type { Experience, CreateExperienceDTO, UpdateExperienceDTO } from "../en
 export interface ExperienceRepository {
   findAll(): Promise<Experience[]>;
   findById(id: number): Promise<Experience | null>;
+  findByUserId(userId: number): Promise<Experience[]>;
   create(data: CreateExperienceDTO): Promise<Experience>;
   update(id: number, data: UpdateExperienceDTO): Promise<Experience | null>;
   delete(id: number): Promise<boolean>;

@@ -18,6 +18,10 @@ export class ExperienceService {
     return this.repository.findById(id);
   }
 
+  async getExperiencesByUserId(userId: number): Promise<Experience[]> {
+    return this.repository.findByUserId(userId);
+  }
+
   async createExperience(data: CreateExperienceDTO): Promise<Experience> {
     const validated = createExperienceSchema.parse(data);
     return this.repository.create(validated);

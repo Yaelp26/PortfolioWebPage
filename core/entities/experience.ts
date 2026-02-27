@@ -4,6 +4,7 @@
  */
 export interface Experience {
   id: number;
+  userId: number;
   company: string;
   position: string;
   description: string;
@@ -16,6 +17,7 @@ export interface Experience {
 }
 
 export interface CreateExperienceDTO {
+  userId: number;
   company: string;
   position: string;
   description: string;

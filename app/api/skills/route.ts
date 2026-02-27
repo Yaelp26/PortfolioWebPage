@@ -6,8 +6,21 @@ import { NextResponse } from "next/server";
 import { skillService } from "@/web/container";
 import { ZodError } from "zod";
 
-export async function GET() {
+/**
+ * GET /api/skills - Retrieve all skills or skills by user.
+ * Query params:
+ *   - userId (optional): Filter skills by user ID
+ */
+export async function GET(request: Request) {
   try {
+    const { searchParams } = new URL(request.url);
+    const userId = searchParams.get("userId");
+
+    if (userId) {
+      const skills = await skillService.getSkillsByUserId(parseInt(userId));
+      return NextResponse.json(skills);
+    }
+
     const skills = await skillService.getAllSkills();
     return NextResponse.json(skills);
   } catch (error) {

@@ -7,6 +7,7 @@ import type { Skill, CreateSkillDTO, UpdateSkillDTO } from "../entities/skill";
 export interface SkillRepository {
   findAll(): Promise<Skill[]>;
   findById(id: number): Promise<Skill | null>;
+  findByUserId(userId: number): Promise<Skill[]>;
   create(data: CreateSkillDTO): Promise<Skill>;
   update(id: number, data: UpdateSkillDTO): Promise<Skill | null>;
   delete(id: number): Promise<boolean>;

@@ -10,6 +10,7 @@ import { sql } from "../db";
 function mapRowToSkill(row: Record<string, unknown>): Skill {
   return {
     id: row.id as number,
+    userId: row.user_id as number,
     name: row.name as string,
     category: row.category as string,
     proficiency: row.proficiency as number,
@@ -31,10 +32,15 @@ export class NeonSkillRepository implements SkillRepository {
     return mapRowToSkill(rows[0]);
   }
 
+  async findByUserId(userId: number): Promise<Skill[]> {
+    const rows = await sql`SELECT * FROM skills WHERE user_id = ${userId} ORDER BY category, name`;
+    return rows.map(mapRowToSkill);
+  }
+
   async create(data: CreateSkillDTO): Promise<Skill> {
     const rows = await sql`
-      INSERT INTO skills (name, category, proficiency, icon_url)
-      VALUES (${data.name}, ${data.category}, ${data.proficiency}, ${data.iconUrl ?? null})
+      INSERT INTO skills (user_id, name, category, proficiency, icon_url)
+      VALUES (${data.userId}, ${data.name}, ${data.category}, ${data.proficiency}, ${data.iconUrl ?? null})
       RETURNING *
     `;
     return mapRowToSkill(rows[0]);

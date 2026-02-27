@@ -33,6 +33,7 @@ function isEndDateAfterStart(startDate: string | null | undefined, endDate: stri
 
 export const createProjectSchema = z
   .object({
+    userId: z.number().int().positive("El ID de usuario debe ser un numero positivo"),
     title: z.string().min(1, "El titulo es obligatorio").max(255, "El titulo no puede exceder 255 caracteres"),
     description: z.string().min(1, "La descripcion es obligatoria"),
     imageUrl: z

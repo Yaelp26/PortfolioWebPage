@@ -10,6 +10,7 @@ import { sql } from "../db";
 function mapRowToExperience(row: Record<string, unknown>): Experience {
   return {
     id: row.id as number,
+    userId: row.user_id as number,
     company: row.company as string,
     position: row.position as string,
     description: row.description as string,
@@ -34,10 +35,16 @@ export class NeonExperienceRepository implements ExperienceRepository {
     return mapRowToExperience(rows[0]);
   }
 
+  async findByUserId(userId: number): Promise<Experience[]> {
+    const rows = await sql`SELECT * FROM experiences WHERE user_id = ${userId} ORDER BY start_date DESC`;
+    return rows.map(mapRowToExperience);
+  }
+
   async create(data: CreateExperienceDTO): Promise<Experience> {
     const rows = await sql`
-      INSERT INTO experiences (company, position, description, start_date, end_date, is_current, location)
+      INSERT INTO experiences (user_id, company, position, description, start_date, end_date, is_current, location)
       VALUES (
+        ${data.userId},
         ${data.company},
         ${data.position},
         ${data.description},

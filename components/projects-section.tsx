@@ -2,6 +2,7 @@
 
 import useSWR from "swr";
 import { useState } from "react";
+import { useSession } from "next-auth/react";
 import type { Project } from "@/core/entities/project";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
@@ -26,7 +27,11 @@ const emptyForm = {
 };
 
 export function ProjectsSection() {
-  const { data: projects, mutate, isLoading } = useSWR<Project[]>("/api/projects");
+  const { data: session } = useSession();
+  const userId = session?.user?.id;
+  const { data: projects, mutate, isLoading } = useSWR<Project[]>(
+    userId ? `/api/projects?userId=${userId}` : null
+  );
   const [open, setOpen] = useState(false);
   const [editingId, setEditingId] = useState<number | null>(null);
   const [form, setForm] = useState(emptyForm);
@@ -54,7 +59,14 @@ export function ProjectsSection() {
 
   async function handleSubmit(e: React.FormEvent) {
     e.preventDefault();
+    
+    if (!userId) {
+      toast.error("Debes iniciar sesión para crear proyectos");
+      return;
+    }
+
     const payload = {
+      userId: parseInt(userId),
       title: form.title,
       description: form.description,
       imageUrl: form.imageUrl || null,
@@ -182,7 +194,7 @@ export function ProjectsSection() {
         </Dialog>
       </div>
 
-      {!projects || projects.length === 0 ? (
+      {!projects || !Array.isArray(projects) || projects.length === 0 ? (
         <Card className="border-dashed">
           <CardContent className="flex flex-col items-center justify-center py-12">
             <FolderOpen className="h-12 w-12 text-muted-foreground/50 mb-4" />

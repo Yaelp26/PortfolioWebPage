@@ -4,6 +4,7 @@
  */
 export interface Skill {
   id: number;
+  userId: number;
   name: string;
   category: string;
   proficiency: number; // 1-100
@@ -13,6 +14,7 @@ export interface Skill {
 }
 
 export interface CreateSkillDTO {
+  userId: number;
   name: string;
   category: string;
   proficiency: number;

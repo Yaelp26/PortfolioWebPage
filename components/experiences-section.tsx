@@ -2,6 +2,7 @@
 
 import useSWR from "swr";
 import { useState } from "react";
+import { useSession } from "next-auth/react";
 import type { Experience } from "@/core/entities/experience";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
@@ -26,7 +27,11 @@ const emptyForm = {
 };
 
 export function ExperiencesSection() {
-  const { data: experiences, mutate, isLoading } = useSWR<Experience[]>("/api/experiences");
+  const { data: session } = useSession();
+  const userId = session?.user?.id;
+  const { data: experiences, mutate, isLoading } = useSWR<Experience[]>(
+    userId ? `/api/experiences?userId=${userId}` : null
+  );
   const [open, setOpen] = useState(false);
   const [editingId, setEditingId] = useState<number | null>(null);
   const [form, setForm] = useState(emptyForm);
@@ -53,7 +58,14 @@ export function ExperiencesSection() {
 
   async function handleSubmit(e: React.FormEvent) {
     e.preventDefault();
+    
+    if (!userId) {
+      toast.error("Debes iniciar sesión para crear experiencias");
+      return;
+    }
+
     const payload = {
+      userId: parseInt(userId),
       company: form.company,
       position: form.position,
       description: form.description,
@@ -112,6 +124,9 @@ export function ExperiencesSection() {
       </div>
     );
   }
+
+  // Validar que experiences sea un array
+  const validExperiences = Array.isArray(experiences) ? experiences : [];
 
   return (
     <div className="flex flex-col gap-6">
@@ -178,7 +193,7 @@ export function ExperiencesSection() {
         </Dialog>
       </div>
 
-      {!experiences || experiences.length === 0 ? (
+      {validExperiences.length === 0 ? (
         <Card className="border-dashed">
           <CardContent className="flex flex-col items-center justify-center py-12">
             <Briefcase className="h-12 w-12 text-muted-foreground/50 mb-4" />
@@ -187,7 +202,7 @@ export function ExperiencesSection() {
         </Card>
       ) : (
         <div className="flex flex-col gap-4">
-          {experiences.map((exp) => (
+          {validExperiences.map((exp) => (
             <Card key={exp.id}>
               <CardHeader className="pb-3">
                 <div className="flex items-start justify-between gap-2">

@@ -19,6 +19,7 @@ import { sql } from "../db";
 function mapRowToProject(row: Record<string, unknown>): Project {
   return {
     id: row.id as number,
+    userId: row.user_id as number,
     title: row.title as string,
     description: row.description as string,
     imageUrl: (row.image_url as string) || null,
@@ -44,10 +45,16 @@ export class NeonProjectRepository implements ProjectRepository {
     return mapRowToProject(rows[0]);
   }
 
+  async findByUserId(userId: number): Promise<Project[]> {
+    const rows = await sql`SELECT * FROM projects WHERE user_id = ${userId} ORDER BY created_at DESC`;
+    return rows.map(mapRowToProject);
+  }
+
   async create(data: CreateProjectDTO): Promise<Project> {
     const rows = await sql`
-      INSERT INTO projects (title, description, image_url, technologies, live_url, repo_url, start_date, end_date)
+      INSERT INTO projects (user_id, title, description, image_url, technologies, live_url, repo_url, start_date, end_date)
       VALUES (
+        ${data.userId},
         ${data.title},
         ${data.description},
         ${data.imageUrl ?? null},
